@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Dados JSON</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input {
+            margin-bottom: 10px;
+            padding: 5px;
+            width: 300px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <h2>Consulta de Dados JSON</h2>
+    <input type="text" id="search" placeholder="Digite um nome para buscar..." onkeyup="buscar()">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Nascimento</th>
+                <th>Província</th>
+                <th>Cidade</th>
+                <th>Link</th>
+            </tr>
+        </thead>
+        <tbody id="tabela-corpo">
+        </tbody>
+    </table>
+    
+    <script>
+        let dados = [];
+
+        fetch('dados.json') // Substitua pelo caminho correto do arquivo JSON
+            .then(response => response.json())
+            .then(data => {
+                dados = data;
+                exibirDados(dados);
+            })
+            .catch(error => console.error('Erro ao carregar o JSON:', error));
+
+        function exibirDados(lista) {
+            const tbody = document.getElementById('tabela-corpo');
+            tbody.innerHTML = '';
+            lista.forEach(item => {
+                let row = `<tr>
+                    <td>${item.ID}</td>
+                    <td>${item.Nome}</td>
+                    <td>${item.Nascimento}</td>
+                    <td>${item.Província}</td>
+                    <td>${item.Cidade}</td>
+                    <td><a href="${item['Link Registro Imigracão']}" target="_blank">Ver Registro</a></td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function buscar() {
+            let termo = document.getElementById('search').value.toLowerCase();
+            let resultado = dados.filter(item => item.Nome.toLowerCase().includes(termo));
+            exibirDados(resultado);
+        }
+    </script>
+</body>
+</html>
