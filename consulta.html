@@ -30,6 +30,31 @@
         th {
             background-color: #f4f4f4;
         }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow-y: auto;
+        }
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            width: 50%;
+            border-radius: 10px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .close {
+            float: right;
+            font-size: 28px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -41,20 +66,28 @@
             <tr>
                 <th>ID</th>
                 <th>Nome</th>
-                <th>Nascimento</th>
                 <th>Província</th>
                 <th>Cidade</th>
-                <th>Links</th>
+                <th>Ações</th>
             </tr>
         </thead>
         <tbody id="tabela-corpo">
         </tbody>
     </table>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="fecharModal()">&times;</span>
+            <h3>Detalhes</h3>
+            <ul id="detalhes-lista"></ul>
+        </div>
+    </div>
     
     <script>
         let dados = [];
+        let dadosFiltrados = [];
 
-        fetch('dados.json') // Substitua pelo caminho correto do arquivo JSON
+        fetch('dados.json')
             .then(response => response.json())
             .then(data => {
                 dados = data;
@@ -65,20 +98,16 @@
             const tbody = document.getElementById('tabela-corpo');
             const tabela = document.getElementById('tabela');
             tbody.innerHTML = '';
+            dadosFiltrados = lista;
             if (lista.length > 0) {
                 tabela.style.display = 'table';
-                lista.forEach(item => {
-                    let links = item['Link Registro Imigracão'].split(/\s+/).map(link => 
-                        `<a href="${link}" target="_blank">Ver Registro</a>`
-                    ).join('<br>');
-                    
+                lista.forEach((item, index) => {
                     let row = `<tr>
                         <td>${item.ID}</td>
                         <td>${item.Nome}</td>
-                        <td>${item.Nascimento}</td>
                         <td>${item.Província}</td>
                         <td>${item.Cidade}</td>
-                        <td>${links}</td>
+                        <td><button onclick="verDetalhes(${index})">Ver Detalhes</button></td>
                     </tr>`;
                     tbody.innerHTML += row;
                 });
@@ -91,6 +120,28 @@
             let termo = document.getElementById('search').value.toLowerCase();
             let resultado = dados.filter(item => item.Nome.toLowerCase().includes(termo));
             exibirDados(resultado);
+        }
+
+        function verDetalhes(index) {
+            let item = dadosFiltrados[index];
+            let lista = document.getElementById('detalhes-lista');
+            lista.innerHTML = '';
+            for (let chave in item) {
+                let valor = item[chave];
+                if (typeof valor === 'string') {
+                    if (valor.includes('\n')) {
+                        valor = valor.split(/\s+/).map(link => link.startsWith('http') ? `<a href="${link}" target="_blank">${link}</a>` : link).join('<br>');
+                    } else if (valor.startsWith('http')) {
+                        valor = `<a href="${valor}" target="_blank">${valor}</a>`;
+                    }
+                }
+                lista.innerHTML += `<li><strong>${chave}:</strong> ${valor}</li>`;
+            }
+            document.getElementById('modal').style.display = 'block';
+        }
+
+        function fecharModal() {
+            document.getElementById('modal').style.display = 'none';
         }
 
         document.getElementById('search').addEventListener('keypress', function(event) {
