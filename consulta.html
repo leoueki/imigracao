@@ -88,6 +88,12 @@
             let resultado = dados.filter(item => item.Nome.toLowerCase().includes(termo));
             exibirDados(resultado);
         }
+
+        document.getElementById('search').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                buscar();
+            }
+        });
     </script>
 </body>
 </html>
