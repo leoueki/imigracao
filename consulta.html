@@ -44,7 +44,7 @@
                 <th>Nascimento</th>
                 <th>Província</th>
                 <th>Cidade</th>
-                <th>Link</th>
+                <th>Links</th>
             </tr>
         </thead>
         <tbody id="tabela-corpo">
@@ -68,13 +68,17 @@
             if (lista.length > 0) {
                 tabela.style.display = 'table';
                 lista.forEach(item => {
+                    let links = item['Link Registro Imigracão'].split(/\s+/).map(link => 
+                        `<a href="${link}" target="_blank">Ver Registro</a>`
+                    ).join('<br>');
+                    
                     let row = `<tr>
                         <td>${item.ID}</td>
                         <td>${item.Nome}</td>
                         <td>${item.Nascimento}</td>
                         <td>${item.Província}</td>
                         <td>${item.Cidade}</td>
-                        <td><a href="${item['Link Registro Imigracão']}" target="_blank">Ver Registro</a></td>
+                        <td>${links}</td>
                     </tr>`;
                     tbody.innerHTML += row;
                 });
