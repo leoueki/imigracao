@@ -9,15 +9,18 @@
             font-family: Arial, sans-serif;
             margin: 20px;
         }
-        input {
+        input, button {
             margin-bottom: 10px;
             padding: 5px;
+        }
+        input {
             width: 300px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            display: none;
         }
         th, td {
             border: 1px solid #ddd;
@@ -31,8 +34,9 @@
 </head>
 <body>
     <h2>Consulta de Dados JSON</h2>
-    <input type="text" id="search" placeholder="Digite um nome para buscar..." onkeyup="buscar()">
-    <table>
+    <input type="text" id="search" placeholder="Digite um nome para buscar...">
+    <button onclick="buscar()">Buscar</button>
+    <table id="tabela">
         <thead>
             <tr>
                 <th>ID</th>
@@ -54,24 +58,29 @@
             .then(response => response.json())
             .then(data => {
                 dados = data;
-                exibirDados(dados);
             })
             .catch(error => console.error('Erro ao carregar o JSON:', error));
 
         function exibirDados(lista) {
             const tbody = document.getElementById('tabela-corpo');
+            const tabela = document.getElementById('tabela');
             tbody.innerHTML = '';
-            lista.forEach(item => {
-                let row = `<tr>
-                    <td>${item.ID}</td>
-                    <td>${item.Nome}</td>
-                    <td>${item.Nascimento}</td>
-                    <td>${item.Província}</td>
-                    <td>${item.Cidade}</td>
-                    <td><a href="${item['Link Registro Imigracão']}" target="_blank">Ver Registro</a></td>
-                </tr>`;
-                tbody.innerHTML += row;
-            });
+            if (lista.length > 0) {
+                tabela.style.display = 'table';
+                lista.forEach(item => {
+                    let row = `<tr>
+                        <td>${item.ID}</td>
+                        <td>${item.Nome}</td>
+                        <td>${item.Nascimento}</td>
+                        <td>${item.Província}</td>
+                        <td>${item.Cidade}</td>
+                        <td><a href="${item['Link Registro Imigracão']}" target="_blank">Ver Registro</a></td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+            } else {
+                tabela.style.display = 'none';
+            }
         }
 
         function buscar() {
